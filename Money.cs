@@ -8,5 +8,20 @@ namespace PayrollSystem
     {
         public decimal Amount;
         public string Currency;
+
+        public static Money AddMoney(Money first, Money second)
+        {
+            if (first.Currency != second.Currency)
+            {
+                throw new InvalidOperationException("Currencies must be the same.");
+            }
+
+            Money result;
+
+            result.Amount = first.Amount + second.Amount;
+            result.Currency = first.Currency;
+
+            return result;
+        }
     }
 }
