@@ -9,7 +9,7 @@ namespace PayrollSystem
         public decimal Amount;
         public string Currency;
 
-        public static Money AddMoney(Money first, Money second)
+        public static Money operator +(Money first, Money second)
         {
             if (first.Currency != second.Currency)
             {
