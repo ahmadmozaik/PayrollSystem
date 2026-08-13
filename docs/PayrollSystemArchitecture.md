@@ -1,0 +1,53 @@
+# PayrollSystem Architecture
+
+```mermaid
+classDiagram
+
+class EmployeeRole {
+    <<enumeration>>
+    Developer
+    Manager
+    Tester
+}
+
+class Money {
+    <<struct>>
+    +decimal Amount
+    +string Currency
+    +operator +(Money, Money) Money
+}
+
+class IPayable {
+    <<interface>>
+    +ProcessPayment(Money amount) void
+}
+
+class Employee {
+    +decimal TAX_RATE
+    -decimal _baseSalary
+    +decimal BaseSalary
+    +ContactInfo Contact
+}
+
+class ContactInfo {
+    +string Email
+    +string Phone
+}
+
+class FullTimeEmployee {
+    +ProcessPayment(Money amount) void
+}
+
+class CompanyPayroll {
+    -FullTimeEmployee[] employees
+    +Indexer
+    +OnSalaryProcessed
+    +RunPayroll() void
+}
+
+Employee <|-- FullTimeEmployee
+IPayable <|.. FullTimeEmployee
+Employee *-- ContactInfo
+CompanyPayroll --> FullTimeEmployee
+FullTimeEmployee --> Money
+```
