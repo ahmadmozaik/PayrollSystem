@@ -1,6 +1,5 @@
 # PayrollSystem Architecture
 
-```mermaid
 classDiagram
 
 class EmployeeRole {
@@ -50,4 +49,3 @@ IPayable <|.. FullTimeEmployee
 Employee *-- ContactInfo
 CompanyPayroll --> FullTimeEmployee
 FullTimeEmployee --> Money
-```
