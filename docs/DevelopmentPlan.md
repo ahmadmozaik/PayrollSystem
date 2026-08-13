@@ -8,16 +8,24 @@
 ## Part 2 — OOP
 - IPayable interface
 - Employee base class
+- Name / Role
+- TAX_RATE constant
+- BaseSalary validation
 - ContactInfo nested type
+- Employee finalizer
 - FullTimeEmployee
+- ProcessPayment implementation
 
 ## Part 3 — Payroll Management
 - PayrollHandler delegate
 - CompanyPayroll
-- Employee array
+- FullTimeEmployee[] array
 - Indexer
-- Event
+- OnSalaryProcessed event
 - RunPayroll
+- Tax calculation
+- Payment Processing
+- Event invocation
 
 ## Part 4 — Application
 - Create employees
