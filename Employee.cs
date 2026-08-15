@@ -22,5 +22,15 @@ namespace PayrollSystem
                 _baseSalary = value;
             }
         }
+        public class ContactInfo
+        {
+            public string Email;
+            public string Phone;
+        }
+
+        ~Employee()
+        {
+            Console.WriteLine("Employee object removed from memory.");
+        }
     }
 }
