@@ -1,6 +1,3 @@
-# PayrollSystem Architecture
-
-```mermaid
 classDiagram
 
 class EmployeeRole {
@@ -23,10 +20,12 @@ class IPayable {
 }
 
 class Employee {
+    +string Name
+    +EmployeeRole Role
     +decimal TAX_RATE
     -decimal _baseSalary
     +decimal BaseSalary
-    +ContactInfo Contact
+    +~Employee()
 }
 
 class ContactInfo {
@@ -38,16 +37,37 @@ class FullTimeEmployee {
     +ProcessPayment(Money amount) void
 }
 
+class PayrollHandler {
+    <<delegate>>
+    +Invoke(string message) void
+}
+
 class CompanyPayroll {
     -FullTimeEmployee[] employees
-    +Indexer
-    +OnSalaryProcessed
+    +CompanyPayroll(int size)
+    +this[int index] FullTimeEmployee
+    +PayrollHandler OnSalaryProcessed
     +RunPayroll() void
+}
+
+class Program {
+    +Main(string[] args) void
+    -ShowNotification(string message) void
+    -ReadValidSalary(string employeeName) decimal
 }
 
 Employee <|-- FullTimeEmployee
 IPayable <|.. FullTimeEmployee
-Employee *-- ContactInfo
-CompanyPayroll --> FullTimeEmployee
-FullTimeEmployee --> Money
-```
+
+Employee --> EmployeeRole : has role
+Employee *-- ContactInfo : nested type
+
+FullTimeEmployee --> Money : processes
+
+CompanyPayroll --> FullTimeEmployee : stores
+CompanyPayroll --> PayrollHandler : event
+CompanyPayroll --> Money : creates payment
+
+Program --> CompanyPayroll : creates
+Program --> FullTimeEmployee : creates
+Program --> EmployeeRole : assigns
