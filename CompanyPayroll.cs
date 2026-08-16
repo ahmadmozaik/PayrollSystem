@@ -18,5 +18,6 @@ namespace PayrollSystem
             get {return employees[index];}
             set {employees[index] = value;}
         }
-    }
+    public event PayrollHandler OnSalaryProcessed;
+    }   
 }
