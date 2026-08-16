@@ -4,7 +4,7 @@ using System.Text;
 
 namespace PayrollSystem
 {
-    internal class FullTimeEmployee : Employee, IPayable
+    public class FullTimeEmployee : Employee, IPayable
     {
         public void ProcessPayment(Money amount)
         {

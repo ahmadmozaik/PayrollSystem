@@ -4,7 +4,7 @@ using System.Text;
 
 namespace PayrollSystem
 {
-    internal class CompanyPayroll
+    public class CompanyPayroll
     {
         private FullTimeEmployee[] employees;
 
@@ -18,6 +18,28 @@ namespace PayrollSystem
             get {return employees[index];}
             set {employees[index] = value;}
         }
-    public event PayrollHandler OnSalaryProcessed;
+        public event PayrollHandler OnSalaryProcessed;
+
+        public void RunPayroll()
+        {
+            foreach (FullTimeEmployee employee in employees)
+            {
+                if (employee == null)
+                {
+                    continue;
+                }
+                
+                decimal tax = employee.BaseSalary * Employee.TAX_RATE;
+                decimal netSalary = employee.BaseSalary - tax;
+
+                Money payment;
+                payment.Amount = netSalary;
+                payment.Currency = "TRY";
+
+                employee.ProcessPayment(payment);
+
+                OnSalaryProcessed?.Invoke($"Salary processed for {employee.Name}: {payment.Amount} {payment.Currency}");
+            }
+        }
     }   
 }
