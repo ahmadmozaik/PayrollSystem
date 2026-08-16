@@ -3,20 +3,15 @@ class Program
 {
     static void Main(string[] args)
     {
-        //EmployeeRole Class Test
-        EmployeeRole role = EmployeeRole.Developer;
-        Console.WriteLine(role);
+        //Testing the FullTimeEmployee class and its ProcessPayment method
+        FullTimeEmployee employee = new FullTimeEmployee();
 
-        //Money struct Test
-        Money firstMoney;
-        firstMoney.Amount = 1500;
-        firstMoney.Currency = "TRY";
-        Money secondMoney;
-        secondMoney.Amount = 500;
-        secondMoney.Currency = "TRY";
-        Money total = firstMoney + secondMoney;
-        Console.WriteLine($"Total: {total.Amount} {total.Currency}");
-        
-        Console.ReadLine();
+        employee.BaseSalary = 5000;
+
+        Money salary;
+        salary.Amount = 4500;
+        salary.Currency = "TRY";
+
+        employee.ProcessPayment(salary);
     }
 }
