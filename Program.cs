@@ -3,15 +3,15 @@ class Program
 {
     static void Main(string[] args)
     {
-        //Testing the FullTimeEmployee class and its ProcessPayment method
+        //Test the FullTimeEmployee class
         FullTimeEmployee employee = new FullTimeEmployee();
 
+        employee.Name = "Ahmad";
+        employee.Role = EmployeeRole.Developer;
         employee.BaseSalary = 5000;
 
-        Money salary;
-        salary.Amount = 4500;
-        salary.Currency = "TRY";
-
-        employee.ProcessPayment(salary);
+        Console.WriteLine(employee.Name);
+        Console.WriteLine(employee.Role);
+        Console.WriteLine(employee.BaseSalary);
     }
 }

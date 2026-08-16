@@ -6,6 +6,10 @@ namespace PayrollSystem
 {
     internal class Employee
     {
+        public string Name { get; set; }
+
+        public EmployeeRole Role { get; set; }
+
         public const decimal TAX_RATE = 0.10m; // 10% constant tax rate
 
         private decimal _baseSalary;
