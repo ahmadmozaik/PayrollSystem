@@ -1,6 +1,7 @@
 # PayrollSystem
 
 A simple C# Console Application for managing employees, validating salaries, processing payroll after tax deductions, and issuing payment notifications.
+To be developed further with applications of all OOP pillars.
 
 ## Features
 
