@@ -1,4 +1,4 @@
-# PayrollSystem Development Plan
+# PayrollSystem V1.0 Development Plan
 
 ## Part 1 — Basic Types
 - EmployeeRole enum
