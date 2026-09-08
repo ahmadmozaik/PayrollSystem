@@ -1,3 +1,4 @@
 <Solution>
   <Project Path="PayrollSystem.App/PayrollSystem.App.csproj" />
+  <Project Path="PayrollSystem.Core/PayrollSystem.Core.csproj" Id="03b5128a-9f36-4168-8fe1-a24c43bcb447" />
 </Solution>

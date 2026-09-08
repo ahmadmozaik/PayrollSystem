@@ -1,5 +1,4 @@
 ﻿using PayrollSystem;
-using PayrollSystem;
 
 class Program
 {
