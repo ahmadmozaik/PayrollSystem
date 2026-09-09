@@ -14,7 +14,7 @@ namespace PayrollSystem
             this.employees = employees;
         }
 
-        public event PayrollHandler OnSalaryProcessed;
+        public event Action<string>? OnSalaryProcessed;
 
         public void RunPayroll()
         {
