@@ -4,7 +4,9 @@ class Program
 {
     static void Main(string[] args)
     {
-        CompanyPayroll payroll = new CompanyPayroll(2);
+        Repository<FullTimeEmployee> repository = new Repository<FullTimeEmployee>();
+
+        CompanyPayroll payroll = new CompanyPayroll(repository);
 
         FullTimeEmployee employee1 = new FullTimeEmployee();
         employee1.Name = "Ahmad";
@@ -16,8 +18,8 @@ class Program
         employee2.Role = EmployeeRole.Tester;
         employee2.BaseSalary = ReadValidSalary(employee2.Name);
 
-        payroll[0] = employee1;
-        payroll[1] = employee2;
+        repository.Add(employee1);
+        repository.Add(employee2);
 
         payroll.OnSalaryProcessed += ShowNotification;
 

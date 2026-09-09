@@ -6,23 +6,19 @@ namespace PayrollSystem
 {
     public class CompanyPayroll
     {
-        private FullTimeEmployee[] employees;
+        private readonly Repository<FullTimeEmployee> employees;
 
-        public CompanyPayroll(int size)
+        public CompanyPayroll(Repository<FullTimeEmployee> employees)
         {
-            employees = new FullTimeEmployee[size];
+            ArgumentNullException.ThrowIfNull(employees);
+            this.employees = employees;
         }
 
-        public FullTimeEmployee this[int index]
-        {
-            get {return employees[index];}
-            set {employees[index] = value;}
-        }
         public event PayrollHandler OnSalaryProcessed;
 
         public void RunPayroll()
         {
-            foreach (FullTimeEmployee employee in employees)
+            foreach (FullTimeEmployee employee in employees.GetAll())
             {
                 if (employee == null)
                 {
