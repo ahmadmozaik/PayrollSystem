@@ -8,13 +8,16 @@ namespace PayrollSystem
     {
         private readonly Repository<FullTimeEmployee> employees;
         private readonly Func<Employee, decimal> bonusCalculator;
+        private readonly Func<Employee, decimal> deductionCalculator;
 
-        public CompanyPayroll(Repository<FullTimeEmployee> employees, Func<Employee, decimal> bonusCalculator)
+        public CompanyPayroll(Repository<FullTimeEmployee> employees, Func<Employee, decimal> bonusCalculator, Func<Employee, decimal> deductionCalculator)
         {
             ArgumentNullException.ThrowIfNull(employees);
             ArgumentNullException.ThrowIfNull(bonusCalculator);
+            ArgumentNullException.ThrowIfNull(deductionCalculator);
             this.employees = employees;
             this.bonusCalculator = bonusCalculator;
+            this.deductionCalculator = deductionCalculator;
         }
 
         public event Action<string>? OnSalaryProcessed;
@@ -32,6 +35,8 @@ namespace PayrollSystem
                 decimal grossSalary = employee.BaseSalary + bonus;
                 decimal tax = grossSalary * Employee.TAX_RATE;
                 decimal netSalary = grossSalary - tax;
+                decimal deductions = deductionCalculator(employee);
+                netSalary -= deductions;
 
                 Money payment;
                 payment.Amount = netSalary;

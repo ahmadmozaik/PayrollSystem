@@ -21,7 +21,23 @@ class Program
             }
         };
 
-        CompanyPayroll payroll = new CompanyPayroll(repository, bonusCalculator);
+        Func<Employee, decimal> deductionCalculator = employee =>  // Calculates deductions based on employee role
+        {
+            if (employee.Role == EmployeeRole.Developer)
+            {
+                return employee.BaseSalary * 0.05m; // 5% deduction for developers
+            }
+            else if (employee.Role == EmployeeRole.Tester)
+            {
+                return employee.BaseSalary * 0.02m; // 2% deduction for testers
+            }
+            else
+            {
+                return 0m; // No deduction for other roles
+            }
+        };
+
+        CompanyPayroll payroll = new CompanyPayroll(repository, bonusCalculator, deductionCalculator);
 
         FullTimeEmployee employee1 = new FullTimeEmployee();
         employee1.Name = "Ahmad";
