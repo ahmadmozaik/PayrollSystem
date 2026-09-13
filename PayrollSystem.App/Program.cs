@@ -69,6 +69,7 @@ class Program
         payroll.OnSalaryProcessed += ShowNotification;
 
         payroll.RunPayroll();
+        payroll.ProcessPendingPayments();
     }
     static void ShowNotification(string message)
     {

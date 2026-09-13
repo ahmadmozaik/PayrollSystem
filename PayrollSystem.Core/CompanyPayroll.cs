@@ -13,6 +13,7 @@ namespace PayrollSystem
         private readonly Func<Employee, decimal> bonusCalculator;
         private readonly Func<Employee, decimal> deductionCalculator;
         private readonly Predicate<Employee> employeeFilter;
+        private readonly Queue<PaymentTransaction> pendingPayments = new Queue<PaymentTransaction>();
 
         /// <summary>
         /// Initializes payroll processing with its employee source and calculation rules.
@@ -42,8 +43,8 @@ namespace PayrollSystem
         public event Action<string>? OnSalaryProcessed;
 
         /// <summary>
-        /// Processes all employees that satisfy the configured filter, applying bonuses,
-        /// tax, deductions, and invoking the OnSalaryProcessed event for each processed employee.
+        /// Calculates payroll for employees that satisfy the configured filter,
+        /// and adds their payment transactions to the pending queue for processing.
         /// </summary>
         public void RunPayroll()
         {
@@ -70,9 +71,21 @@ namespace PayrollSystem
                 payment.Amount = netSalary;
                 payment.Currency = "TRY";
 
-                employee.ProcessPayment(payment);
+                pendingPayments.Enqueue(new PaymentTransaction(employee, payment));
+            }
+        }
 
-                OnSalaryProcessed?.Invoke($"Salary processed for {employee.Name}: {payment.Amount} {payment.Currency}");
+        /// <summary>
+        /// Processes queued payments in FIFO order.
+        /// </summary>
+        public void ProcessPendingPayments()
+        {
+            while (pendingPayments.Count > 0)
+            {
+                PaymentTransaction transaction = pendingPayments.Dequeue();
+                transaction.Employee.ProcessPayment(transaction.Payment);
+
+                OnSalaryProcessed?.Invoke($"Salary processed for {transaction.Employee.Name}: {transaction.Payment.Amount} {transaction.Payment.Currency}");
             }
         }
     }   
