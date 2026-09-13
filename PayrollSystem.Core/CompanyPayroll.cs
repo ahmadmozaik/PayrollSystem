@@ -4,6 +4,9 @@ using System.Text;
 
 namespace PayrollSystem
 {
+    /// <summary>
+    /// Coordinates payroll processing using configurable bonus, deduction, and employee-filtering rules.
+    /// </summary>
     public class CompanyPayroll
     {
         private readonly Repository<FullTimeEmployee> employees;
@@ -11,6 +14,16 @@ namespace PayrollSystem
         private readonly Func<Employee, decimal> deductionCalculator;
         private readonly Predicate<Employee> employeeFilter;
 
+        /// <summary>
+        /// Initializes payroll processing with its employee source and calculation rules.
+        /// </summary>
+        /// <param name="employees">The repository containing employees to process.</param>
+        /// <param name="bonusCalculator">The rule used to calculate employee bonuses.</param>
+        /// <param name="deductionCalculator">The rule used to calculate employee deductions.</param>
+        /// <param name="employeeFilter">The rule used to select employees for processing.</param>
+        /// <exception cref="ArgumentNullException">
+        /// Thrown when any constructor argument is null.
+        /// </exception>
         public CompanyPayroll(Repository<FullTimeEmployee> employees, Func<Employee, decimal> bonusCalculator, Func<Employee, decimal> deductionCalculator, Predicate<Employee> employeeFilter)
         {
             ArgumentNullException.ThrowIfNull(employees);
@@ -23,8 +36,15 @@ namespace PayrollSystem
             this.employeeFilter = employeeFilter;
         }
 
+        /// <summary>
+        /// Occurs after an employee's salary has been processed successfully, providing a notification message.
+        /// </summary>
         public event Action<string>? OnSalaryProcessed;
 
+        /// <summary>
+        /// Processes all employees that satisfy the configured filter, applying bonuses,
+        /// tax, deductions, and invoking the OnSalaryProcessed event for each processed employee.
+        /// </summary>
         public void RunPayroll()
         {
             foreach (FullTimeEmployee employee in employees.GetAll())

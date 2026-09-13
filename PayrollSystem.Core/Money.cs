@@ -4,6 +4,9 @@ using System.Text;
 
 namespace PayrollSystem
 {
+    /// <summary>
+    /// Represents a monetary value with an amount and currency, providing functionality for arithmetic operations while ensuring currency consistency.
+    /// </summary>
     public struct Money
     {
         public decimal Amount;

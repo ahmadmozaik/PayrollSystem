@@ -4,6 +4,9 @@ using System.Text;
 
 namespace PayrollSystem
 {
+    /// <summary>
+    /// Represents an employee in the payroll system, including their name, role, base salary, and contact information.
+    /// </summary>
     public class Employee
     {
         public string Name { get; set; }
@@ -14,6 +17,12 @@ namespace PayrollSystem
 
         private decimal _baseSalary;
 
+        /// <summary>
+        /// Gets or sets the base salary of the employee.
+        /// </summary>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// Thrown when the value is less than 1000.
+        /// </exception>
         public decimal BaseSalary
         {
             get { return _baseSalary; }
