@@ -5,8 +5,23 @@ class Program
     static void Main(string[] args)
     {
         Repository<FullTimeEmployee> repository = new Repository<FullTimeEmployee>();
+        Func<Employee, decimal> bonusCalculator = employee =>  // Calculates a bonus based on employee role
+        {
+            if (employee.Role == EmployeeRole.Developer)
+            {
+                return employee.BaseSalary * 0.1m; // 10% bonus for developers
+            }
+            else if (employee.Role == EmployeeRole.Tester)
+            {
+                return employee.BaseSalary * 0.05m; // 5% bonus for testers
+            }
+            else
+            {
+                return 0m; // No bonus for other roles
+            }
+        };
 
-        CompanyPayroll payroll = new CompanyPayroll(repository);
+        CompanyPayroll payroll = new CompanyPayroll(repository, bonusCalculator);
 
         FullTimeEmployee employee1 = new FullTimeEmployee();
         employee1.Name = "Ahmad";
