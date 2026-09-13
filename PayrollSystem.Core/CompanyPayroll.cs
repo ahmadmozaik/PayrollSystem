@@ -9,15 +9,18 @@ namespace PayrollSystem
         private readonly Repository<FullTimeEmployee> employees;
         private readonly Func<Employee, decimal> bonusCalculator;
         private readonly Func<Employee, decimal> deductionCalculator;
+        private readonly Predicate<Employee> employeeFilter;
 
-        public CompanyPayroll(Repository<FullTimeEmployee> employees, Func<Employee, decimal> bonusCalculator, Func<Employee, decimal> deductionCalculator)
+        public CompanyPayroll(Repository<FullTimeEmployee> employees, Func<Employee, decimal> bonusCalculator, Func<Employee, decimal> deductionCalculator, Predicate<Employee> employeeFilter)
         {
             ArgumentNullException.ThrowIfNull(employees);
             ArgumentNullException.ThrowIfNull(bonusCalculator);
             ArgumentNullException.ThrowIfNull(deductionCalculator);
+            ArgumentNullException.ThrowIfNull(employeeFilter);
             this.employees = employees;
             this.bonusCalculator = bonusCalculator;
             this.deductionCalculator = deductionCalculator;
+            this.employeeFilter = employeeFilter;
         }
 
         public event Action<string>? OnSalaryProcessed;
@@ -27,6 +30,11 @@ namespace PayrollSystem
             foreach (FullTimeEmployee employee in employees.GetAll())
             {
                 if (employee == null)
+                {
+                    continue;
+                }
+
+                if (!employeeFilter(employee))
                 {
                     continue;
                 }

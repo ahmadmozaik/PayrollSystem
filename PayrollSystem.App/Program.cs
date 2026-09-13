@@ -37,7 +37,9 @@ class Program
             }
         };
 
-        CompanyPayroll payroll = new CompanyPayroll(repository, bonusCalculator, deductionCalculator);
+        Predicate<Employee> employeeFilter = employee => employee.Role == EmployeeRole.Developer;
+
+        CompanyPayroll payroll = new CompanyPayroll(repository, bonusCalculator, deductionCalculator, employeeFilter);
 
         FullTimeEmployee employee1 = new FullTimeEmployee();
         employee1.Name = "Ahmad";
