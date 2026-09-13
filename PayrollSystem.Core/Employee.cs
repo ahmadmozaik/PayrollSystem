@@ -9,6 +9,10 @@ namespace PayrollSystem
     /// </summary>
     public class Employee
     {
+        /// <summary>
+        /// Gets or sets the employee's unique identifier.
+        /// </summary>
+        public int Id { get; set; }
         public string Name { get; set; }
 
         public EmployeeRole Role { get; set; }

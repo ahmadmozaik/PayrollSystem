@@ -5,6 +5,9 @@ class Program
     static void Main(string[] args)
     {
         Repository<FullTimeEmployee> repository = new Repository<FullTimeEmployee>();
+
+        Dictionary<int, Employee> employeesById = new Dictionary<int, Employee>();
+
         Func<Employee, decimal> bonusCalculator = employee =>  // Calculates a bonus based on employee role
         {
             if (employee.Role == EmployeeRole.Developer)
@@ -42,17 +45,26 @@ class Program
         CompanyPayroll payroll = new CompanyPayroll(repository, bonusCalculator, deductionCalculator, employeeFilter);
 
         FullTimeEmployee employee1 = new FullTimeEmployee();
+        employee1.Id = 1;
         employee1.Name = "Ahmad";
         employee1.Role = EmployeeRole.Developer;
         employee1.BaseSalary = ReadValidSalary(employee1.Name);
 
         FullTimeEmployee employee2 = new FullTimeEmployee();
+        employee2.Id = 2;
         employee2.Name = "Sara";
         employee2.Role = EmployeeRole.Tester;
         employee2.BaseSalary = ReadValidSalary(employee2.Name);
 
         repository.Add(employee1);
+        employeesById.Add(employee1.Id, employee1);
         repository.Add(employee2);
+        employeesById.Add(employee2.Id, employee2);
+        
+        if (employeesById.TryGetValue(1, out Employee? foundEmployee))
+        {
+            Console.WriteLine($"Lookup found: {foundEmployee.Name}");
+        }
 
         payroll.OnSalaryProcessed += ShowNotification;
 
