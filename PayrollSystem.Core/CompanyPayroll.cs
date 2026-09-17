@@ -47,6 +47,7 @@ namespace PayrollSystem
         /// Calculates payroll for employees that satisfy the configured filter,
         /// and adds their payment transactions to the pending queue for processing.
         /// </summary>
+        [AuditTrail("Run payroll", "PayrollSystem")]
         public void RunPayroll()
         {
             foreach (FullTimeEmployee employee in employees.GetAll())
@@ -80,6 +81,7 @@ namespace PayrollSystem
         /// <summary>
         /// Processes queued payments in FIFO order.
         /// </summary>
+        [AuditTrail("Process pending payments", "PayrollSystem")]
         public void ProcessPendingPayments()
         {
             while (pendingPayments.Count > 0)

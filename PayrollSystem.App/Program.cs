@@ -1,9 +1,13 @@
 ﻿using PayrollSystem;
+using System.Reflection;
 
 class Program
 {
     static void Main(string[] args)
     {
+        DisplayAuditMetadata();
+        Console.WriteLine();
+
         Repository<FullTimeEmployee> repository = new Repository<FullTimeEmployee>();
 
         Dictionary<int, Employee> employeesById = new Dictionary<int, Employee>();
@@ -101,16 +105,16 @@ class Program
         Console.WriteLine("Employees sorted by base salary:");
         foreach (Employee employee in employeesBySalary)
         {
-            Console.WriteLine($" - {employee.Name}: {employee.BaseSalary} TRY");
+            Console.WriteLine($" - {employee.Name}: {employee.BaseSalary.ToCurrencyString()}");
         }
 
         decimal highEarnerThreshold = 1500m;
 
-        Console.WriteLine($"Employees earning at least {highEarnerThreshold} TRY:");
+        Console.WriteLine($"Employees earning at least {highEarnerThreshold.ToCurrencyString()}:");
 
         foreach (FullTimeEmployee employee in repository.GetHighEarners(highEarnerThreshold))
         {
-            Console.WriteLine($" - {employee.Name}: {employee.BaseSalary} TRY");
+            Console.WriteLine($" - {employee.Name}: {employee.BaseSalary.ToCurrencyString()}");
         }
 
         if (employeesById.TryGetValue(1, out Employee? foundEmployee))
@@ -130,6 +134,35 @@ class Program
             Console.WriteLine($"Latest operation: {latestOperation}");
         }
     }
+
+    static void DisplayAuditMetadata()
+    {
+        Console.WriteLine("Audit Payroll Operations:");
+
+        Assembly payrollAssembly = typeof(CompanyPayroll).Assembly;
+
+        foreach (Type type in payrollAssembly.GetTypes())
+        {
+            MethodInfo[] methods = type.GetMethods(
+                BindingFlags.Public |
+                BindingFlags.Instance |
+                BindingFlags.Static |
+                BindingFlags.DeclaredOnly);
+
+            foreach (MethodInfo method in methods)
+            {
+                AuditTrailAttribute? auditTrail =
+                    method.GetCustomAttribute<AuditTrailAttribute>();
+
+                if (auditTrail != null)
+                {
+                    Console.WriteLine(
+                        $" - {auditTrail.OperationName} by {auditTrail.Author}");
+                }
+            }
+        }
+    }
+
     static void ShowNotification(string message)
     {
         Console.WriteLine($"Notification: {message}");

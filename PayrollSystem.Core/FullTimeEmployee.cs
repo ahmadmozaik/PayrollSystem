@@ -13,6 +13,7 @@ namespace PayrollSystem
         /// Processes a payment for the full-time employee.
         /// </summary>
         /// <param name="amount">The amount to be paid.</param>
+        [AuditTrail("Process employee payment", "PayrollSystem")]
         public void ProcessPayment(Money amount)
         {
             Console.WriteLine($"Processing payment of {amount.Amount} {amount.Currency} for full-time employee.");
