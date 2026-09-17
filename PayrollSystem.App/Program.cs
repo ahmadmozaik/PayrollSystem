@@ -10,6 +10,8 @@ class Program
 
         Repository<FullTimeEmployee> repository = new Repository<FullTimeEmployee>();
 
+        EmployeeJsonService employeeJsonService = new EmployeeJsonService();
+
         Dictionary<int, Employee> employeesById = new Dictionary<int, Employee>();
 
         HashSet<string> employeeEmails = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -102,6 +104,35 @@ class Program
         employeesById.Add(employee2.Id, employee2);
         employeesBySalary.Add(employee2);
 
+        string dataDirectory = Path.Combine(AppContext.BaseDirectory, "Data");
+
+        Directory.CreateDirectory(dataDirectory);
+
+        string employeeFilePath = Path.Combine(dataDirectory, "employees.json");
+        string auditLogFilePath = Path.Combine(dataDirectory, "payroll-audit.log");
+
+        AuditLogService auditLogService = new AuditLogService(auditLogFilePath);
+
+        employeeJsonService.Export(
+            employeeFilePath,
+            repository.GetAll());
+
+        IReadOnlyList<FullTimeEmployee> importedEmployees = employeeJsonService.Import(employeeFilePath);
+
+        Console.WriteLine(
+            $"Exported and imported {importedEmployees.Count} employees:");
+
+        foreach (FullTimeEmployee importedEmployee in importedEmployees)
+        {
+            Console.WriteLine(
+                $" - {importedEmployee.Name}, " +
+                $"{importedEmployee.Role}, " +
+                $"{importedEmployee.Contact.Email}");
+        }
+
+        Console.WriteLine($"JSON file: {employeeFilePath}");
+        Console.WriteLine();
+
         Console.WriteLine("Employees sorted by base salary:");
         foreach (Employee employee in employeesBySalary)
         {
@@ -123,9 +154,12 @@ class Program
         }
 
         payroll.OnSalaryProcessed += ShowNotification;
+        payroll.OnSalaryProcessed += auditLogService.WriteEntry;
 
         payroll.RunPayroll();
         payroll.ProcessPendingPayments();
+
+        Console.WriteLine($"Audit log: {auditLogFilePath}");
 
         string? latestOperation = payroll.GetLatestOperation();
 
