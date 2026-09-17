@@ -12,6 +12,20 @@ class Program
 
         EmployeeJsonService employeeJsonService = new EmployeeJsonService();
 
+        string dataDirectory = Path.Combine(AppContext.BaseDirectory, "Data");
+
+        Directory.CreateDirectory(dataDirectory);
+
+        string employeeFilePath = Path.Combine(dataDirectory, "employees.json");
+
+        string auditLogFilePath = Path.Combine(dataDirectory, "payroll-audit.log");
+
+        string highEarnerReportFilePath = Path.Combine(dataDirectory, "high-earner-report.txt");
+
+        AuditLogService auditLogService = new AuditLogService(auditLogFilePath);
+
+        HighEarnerReportService highEarnerReportService = new HighEarnerReportService();
+
         Dictionary<int, Employee> employeesById = new Dictionary<int, Employee>();
 
         HashSet<string> employeeEmails = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -64,70 +78,47 @@ class Program
             }
         };
 
-        Predicate<Employee> employeeFilter = employee => employee.Role == EmployeeRole.Developer;
+        Predicate<Employee> employeeFilter = employee => true; // Include all employees
 
         CompanyPayroll payroll = new CompanyPayroll(repository, bonusCalculator, deductionCalculator, employeeFilter);
 
-        FullTimeEmployee employee1 = new FullTimeEmployee();
-        employee1.Id = 1;
-        employee1.Name = "Ahmad";
-        employee1.Contact.Email = "ahmad@example.com";
-        employee1.Contact.Phone = "123-456-7890";
-        employee1.Role = EmployeeRole.Developer;
-        employee1.BaseSalary = ReadValidSalary(employee1.Name);
+        IReadOnlyList<FullTimeEmployee> employees;
 
-        FullTimeEmployee employee2 = new FullTimeEmployee();
-        employee2.Id = 2;
-        employee2.Name = "Sara";
-        employee2.Contact.Email = "sara@example.com";
-        employee2.Contact.Phone = "098-765-4321";
-        employee2.Role = EmployeeRole.Tester;
-        employee2.BaseSalary = ReadValidSalary(employee2.Name);
-
-        if (!employeeEmails.Add(employee1.Contact.Email))
+        if (File.Exists(employeeFilePath))
         {
-            Console.WriteLine($"Duplicate email detected: {employee1.Contact.Email}");
-            return;
+            employees = employeeJsonService.Import(employeeFilePath);
+
+            Console.WriteLine(
+                $"Loaded {employees.Count} employees from JSON.");
+        }
+        else
+        {
+            employees = CreateEmployeesFromInput();
+
+            employeeJsonService.Export(
+                employeeFilePath,
+                employees);
+
+            Console.WriteLine(
+                $"Created and exported {employees.Count} employees.");
         }
 
-        if (!employeeEmails.Add(employee2.Contact.Email))
+        foreach (FullTimeEmployee employee in employees)
         {
-            Console.WriteLine($"Duplicate email detected: {employee2.Contact.Email}");
-            return;
+            if (!TryRegisterEmployee(employee, repository, employeesById, employeeEmails, employeesBySalary))
+            {
+                return;
+            }
         }
 
-        repository.Add(employee1);
-        employeesById.Add(employee1.Id, employee1);
-        employeesBySalary.Add(employee1);
+        Console.WriteLine("Employees available for payroll:");
 
-        repository.Add(employee2);
-        employeesById.Add(employee2.Id, employee2);
-        employeesBySalary.Add(employee2);
-
-        string dataDirectory = Path.Combine(AppContext.BaseDirectory, "Data");
-
-        Directory.CreateDirectory(dataDirectory);
-
-        string employeeFilePath = Path.Combine(dataDirectory, "employees.json");
-        string auditLogFilePath = Path.Combine(dataDirectory, "payroll-audit.log");
-
-        AuditLogService auditLogService = new AuditLogService(auditLogFilePath);
-
-        employeeJsonService.Export(
-            employeeFilePath,
-            repository.GetAll());
-
-        IReadOnlyList<FullTimeEmployee> importedEmployees = employeeJsonService.Import(employeeFilePath);
-
-        Console.WriteLine(
-            $"Exported and imported {importedEmployees.Count} employees:");
-
-        foreach (FullTimeEmployee importedEmployee in importedEmployees)
+        foreach (FullTimeEmployee employee in repository.GetAll())
         {
             Console.WriteLine(
-                $" - {importedEmployee.Name}, " +
-                $"{importedEmployee.Role}, " +
-                $"{importedEmployee.Contact.Email}");
+                $" - {employee.Name}, " +
+                $"{employee.Role}, " +
+                $"{employee.Contact.Email}");
         }
 
         Console.WriteLine($"JSON file: {employeeFilePath}");
@@ -147,6 +138,14 @@ class Program
         {
             Console.WriteLine($" - {employee.Name}: {employee.BaseSalary.ToCurrencyString()}");
         }
+
+        highEarnerReportService.Save(
+            highEarnerReportFilePath,
+            repository.GetHighEarners(highEarnerThreshold),
+            highEarnerThreshold);
+
+        Console.WriteLine(
+            $"High-earner report saved to: {highEarnerReportFilePath}");
 
         if (employeesById.TryGetValue(1, out Employee? foundEmployee))
         {
@@ -208,6 +207,59 @@ class Program
     {
         Console.WriteLine($"Notification: {message}");
     }
+
+    static FullTimeEmployee[] CreateEmployeesFromInput()
+    {
+        FullTimeEmployee employee1 = new FullTimeEmployee();
+        employee1.Id = 1;
+        employee1.Name = "Ahmad";
+        employee1.Contact.Email = "ahmad@example.com";
+        employee1.Contact.Phone = "123-456-7890";
+        employee1.Role = EmployeeRole.Developer;
+        employee1.BaseSalary = ReadValidSalary(employee1.Name);
+
+        FullTimeEmployee employee2 = new FullTimeEmployee();
+        employee2.Id = 2;
+        employee2.Name = "Sara";
+        employee2.Contact.Email = "sara@example.com";
+        employee2.Contact.Phone = "098-765-4321";
+        employee2.Role = EmployeeRole.Tester;
+        employee2.BaseSalary = ReadValidSalary(employee2.Name);
+
+        FullTimeEmployee employee3 = new FullTimeEmployee();
+        employee3.Id = 3;
+        employee3.Name = "John";
+        employee3.Contact.Email = "john@example.com";
+        employee3.Contact.Phone = "555-1234";
+        employee3.Role = EmployeeRole.Manager;
+        employee3.BaseSalary = ReadValidSalary(employee3.Name);
+
+        FullTimeEmployee employee4 = new FullTimeEmployee();
+        employee4.Id = 4;
+        employee4.Name = "Alice";
+        employee4.Contact.Email = "alice@example.com";
+        employee4.Contact.Phone = "555-5678";
+        employee4.Role = EmployeeRole.Developer;
+        employee4.BaseSalary = ReadValidSalary(employee4.Name);
+
+        FullTimeEmployee employee5 = new FullTimeEmployee();
+        employee5.Id = 5;
+        employee5.Name = "Bob";
+        employee5.Contact.Email = "bob@example.com";
+        employee5.Contact.Phone = "555-9012";
+        employee5.Role = EmployeeRole.Tester;
+        employee5.BaseSalary = ReadValidSalary(employee5.Name);
+
+        return new FullTimeEmployee[]
+        {
+        employee1,
+        employee2,
+        employee3,
+        employee4,
+        employee5
+        };
+    }
+
     static decimal ReadValidSalary(string employeeName)
     {
         while (true)
@@ -228,5 +280,24 @@ class Program
 
             return salary;
         }
+    }
+
+    static bool TryRegisterEmployee(
+        FullTimeEmployee employee,
+        Repository<FullTimeEmployee> repository,
+        Dictionary<int, Employee> employeesById,
+        HashSet<string> employeeEmails,
+        SortedSet<Employee> employeesBySalary)
+    {
+        if (!employeeEmails.Add(employee.Contact.Email))
+        {
+            Console.WriteLine(
+                $"Duplicate email detected: {employee.Contact.Email}");
+            return false;
+        }
+        repository.Add(employee);
+        employeesById.Add(employee.Id, employee);
+        employeesBySalary.Add(employee);
+        return true;
     }
 }

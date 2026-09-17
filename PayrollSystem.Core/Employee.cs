@@ -13,7 +13,7 @@ namespace PayrollSystem
         /// Gets or sets the employee's unique identifier.
         /// </summary>
         public int Id { get; set; }
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
 
         public EmployeeRole Role { get; set; }
 
