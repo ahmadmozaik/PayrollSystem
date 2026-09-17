@@ -79,15 +79,27 @@ namespace PayrollSystem
         }
 
         /// <summary>
+        /// Queues and processes the complete payroll operation asynchronously.
+        /// </summary>
+        /// <returns>A task representing the asynchronous operation.</returns>
+        [AuditTrail("Process complete payroll asynchronously", "PayrollSystem")]
+        public async Task ProcessPayrollAsync()
+        {
+            RunPayroll();
+            await ProcessPendingPaymentsAsync();
+        }
+
+        /// <summary>
         /// Processes queued payments in FIFO order.
         /// </summary>
-        [AuditTrail("Process pending payments", "PayrollSystem")]
-        public void ProcessPendingPayments()
+        /// <returns>A task that represents the queued payment operations.</returns>
+        [AuditTrail("Process pending payments asynchronously", "PayrollSystem")]
+        public async Task ProcessPendingPaymentsAsync()
         {
             while (pendingPayments.Count > 0)
             {
                 PaymentTransaction transaction = pendingPayments.Dequeue();
-                transaction.Employee.ProcessPayment(transaction.Payment);
+                await transaction.Employee.ProcessPaymentAsync(transaction.Payment);
                 operationHistory.Push($"Processed payment for {transaction.Employee.Name}: {transaction.Payment.Amount} {transaction.Payment.Currency}");
 
                 OnSalaryProcessed?.Invoke($"Salary processed for {transaction.Employee.Name}: {transaction.Payment.Amount} {transaction.Payment.Currency}");

@@ -3,7 +3,7 @@ using System.Reflection;
 
 class Program
 {
-    static void Main(string[] args)
+    static async Task Main(string[] args)
     {
         DisplayAuditMetadata();
         Console.WriteLine();
@@ -156,8 +156,15 @@ class Program
         payroll.OnSalaryProcessed += ShowNotification;
         payroll.OnSalaryProcessed += auditLogService.WriteEntry;
 
-        payroll.RunPayroll();
-        payroll.ProcessPendingPayments();
+        Task payrollProcessingTask = Task.Run(payroll.ProcessPayrollAsync);
+
+        Console.WriteLine("Payroll processing started in the background.");
+
+        Console.WriteLine($"The application remains responsive with {repository.GetAll().Count} employees available.");
+
+        await payrollProcessingTask;
+
+        Console.WriteLine("Background payroll processing completed.");
 
         Console.WriteLine($"Audit log: {auditLogFilePath}");
 

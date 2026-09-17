@@ -13,10 +13,13 @@ namespace PayrollSystem
         /// Processes a payment for the full-time employee.
         /// </summary>
         /// <param name="amount">The amount to be paid.</param>
-        [AuditTrail("Process employee payment", "PayrollSystem")]
-        public void ProcessPayment(Money amount)
+        /// <returns>A task representing the payment operation.</returns>
+        [AuditTrail("Process employee payment asynchronously", "PayrollSystem")]
+        public async Task ProcessPaymentAsync(Money amount)
         {
-            Console.WriteLine($"Processing payment of {amount.Amount} {amount.Currency} for full-time employee.");
+            Console.WriteLine($"Sending payment of {amount.Amount} {amount.Currency} to the payment gateway...");
+            await Task.Delay(1000); // Simulate async operation
+            Console.WriteLine($"Payment of {amount.Amount} {amount.Currency} completed for {Name}");
         }
     }
 }

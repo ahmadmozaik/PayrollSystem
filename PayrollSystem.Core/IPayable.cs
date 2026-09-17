@@ -13,6 +13,7 @@ namespace PayrollSystem
         /// Processes a payment for the employee.
         /// </summary>
         /// <param name="amount">The amount to be paid.</param>
-        void ProcessPayment(Money amount);
+        /// <returns>A task representing the asynchronous operation.</returns>
+        Task ProcessPaymentAsync(Money amount);
     }
 }
