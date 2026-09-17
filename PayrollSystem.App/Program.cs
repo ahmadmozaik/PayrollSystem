@@ -70,6 +70,13 @@ class Program
 
         payroll.RunPayroll();
         payroll.ProcessPendingPayments();
+
+        string? latestOperation = payroll.GetLatestOperation();
+
+        if (latestOperation != null)
+        {
+            Console.WriteLine($"Latest operation: {latestOperation}");
+        }
     }
     static void ShowNotification(string message)
     {

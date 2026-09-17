@@ -14,6 +14,7 @@ namespace PayrollSystem
         private readonly Func<Employee, decimal> deductionCalculator;
         private readonly Predicate<Employee> employeeFilter;
         private readonly Queue<PaymentTransaction> pendingPayments = new Queue<PaymentTransaction>();
+        private readonly Stack<string> operationHistory = new Stack<string>();
 
         /// <summary>
         /// Initializes payroll processing with its employee source and calculation rules.
@@ -72,6 +73,7 @@ namespace PayrollSystem
                 payment.Currency = "TRY";
 
                 pendingPayments.Enqueue(new PaymentTransaction(employee, payment));
+                operationHistory.Push($"Queued payment for {employee.Name}: {payment.Amount} {payment.Currency}");
             }
         }
 
@@ -84,9 +86,26 @@ namespace PayrollSystem
             {
                 PaymentTransaction transaction = pendingPayments.Dequeue();
                 transaction.Employee.ProcessPayment(transaction.Payment);
+                operationHistory.Push($"Processed payment for {transaction.Employee.Name}: {transaction.Payment.Amount} {transaction.Payment.Currency}");
 
                 OnSalaryProcessed?.Invoke($"Salary processed for {transaction.Employee.Name}: {transaction.Payment.Amount} {transaction.Payment.Currency}");
             }
+        }
+
+        /// <summary>
+        /// Gets the most recent payroll operation without removing it.
+        /// </summary>
+        /// <returns>
+        /// The most recent operation description, or null if no operations have been performed.
+        /// </returns>
+        public string? GetLatestOperation()
+        {
+            if (operationHistory.TryPeek(out string? latestOperation))
+            {
+                return latestOperation;
+            }
+
+            return null;
         }
     }   
 }
