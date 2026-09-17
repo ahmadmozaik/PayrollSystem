@@ -1,4 +1,3 @@
-```markdown
 # PayrollSystem V2
 
 PayrollSystem is a C# console application that demonstrates an enterprise-style payroll workflow using object-oriented programming, generic collections, delegates, events, serialization, streams, reflection, and asynchronous processing.
@@ -56,22 +55,23 @@ The original V1 implementation remains available on the `master` branch. V2 deve
 
 ```text
 PayrollSystem
-├── PayrollSystem.App
-│   └── Program.cs
-├── PayrollSystem.Core
-│   ├── Employee.cs
-│   ├── FullTimeEmployee.cs
-│   ├── CompanyPayroll.cs
-│   ├── Repository.cs
-│   ├── EmployeeJsonService.cs
-│   ├── AuditLogService.cs
-│   ├── HighEarnerReportService.cs
-│   └── supporting domain types
-└── docs
-    ├── V1_DevelopmentPlan.md
-    ├── V2_DevelopmentPlan.md
-    ├── PayrollSystemArchitecture.md
-    └── PayrollFlow.md
+|-- PayrollSystem.App
+|   `-- Program.cs
+|-- PayrollSystem.Core
+|   |-- Employee.cs
+|   |-- FullTimeEmployee.cs
+|   |-- CompanyPayroll.cs
+|   |-- Repository.cs
+|   |-- EmployeeJsonService.cs
+|   |-- AuditLogService.cs
+|   |-- HighEarnerReportService.cs
+|   `-- supporting domain types
+`-- docs
+    |-- V1_DevelopmentPlan.md
+    |-- V2_DevelopmentPlan.md
+    |-- PayrollSystemArchitecture.md
+    `-- PayrollFlow.md
+```
 
 ## Application Flow
 
@@ -116,4 +116,3 @@ On the first run, enter a valid salary of at least `1000` for each employee. Lat
 - Newtonsoft.Json
 - Visual Studio
 - Git and GitHub
-```
