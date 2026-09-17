@@ -1,73 +1,136 @@
+# PayrollSystem V2 Architecture
+
+The Core project contains the payroll domain, collections, persistence services, reporting, metadata, and asynchronous payment workflow. The App project provides startup configuration and console interaction.
+
+```mermaid
 classDiagram
+    direction LR
 
-class EmployeeRole {
-    <<enumeration>>
-    Developer
-    Manager
-    Tester
-}
+    class EmployeeRole {
+        <<enumeration>>
+        Developer
+        Manager
+        Tester
+    }
 
-class Money {
-    <<struct>>
-    +decimal Amount
-    +string Currency
-    +operator +(Money, Money) Money
-}
+    class Money {
+        <<struct>>
+        +decimal Amount
+        +string Currency
+        +Add(Money other) Money
+    }
 
-class IPayable {
-    <<interface>>
-    +ProcessPayment(Money amount) void
-}
+    class IPayable {
+        <<interface>>
+        +ProcessPaymentAsync(Money amount) Task
+    }
 
-class Employee {
-    +string Name
-    +EmployeeRole Role
-    +decimal TAX_RATE
-    -decimal _baseSalary
-    +decimal BaseSalary
-    +~Employee()
-}
+    class Employee {
+        +int Id
+        +string Name
+        +EmployeeRole Role
+        +decimal BaseSalary
+        +ContactInfo Contact
+        +decimal TAX_RATE
+    }
 
-class ContactInfo {
-    +string Email
-    +string Phone
-}
+    class ContactInfo {
+        +string Email
+        +string Phone
+    }
 
-class FullTimeEmployee {
-    +ProcessPayment(Money amount) void
-}
+    class FullTimeEmployee {
+        +ProcessPaymentAsync(Money amount) Task
+    }
 
-class PayrollHandler {
-    <<delegate>>
-    +Invoke(string message) void
-}
+    class Repository {
+        <<generic>>
+        -List items
+        +Add(T item) void
+        +GetAll() IReadOnlyList
+        +GetHighEarners(decimal threshold) IEnumerable
+    }
 
-class CompanyPayroll {
-    -FullTimeEmployee[] employees
-    +CompanyPayroll(int size)
-    +this[int index] FullTimeEmployee
-    +PayrollHandler OnSalaryProcessed
-    +RunPayroll() void
-}
+    class PaymentTransaction {
+        +FullTimeEmployee Employee
+        +Money Payment
+    }
 
-class Program {
-    +Main(string[] args) void
-    -ShowNotification(string message) void
-    -ReadValidSalary(string employeeName) decimal
-}
+    class CompanyPayroll {
+        -Repository employees
+        -Queue pendingPayments
+        -Stack operationHistory
+        -Func bonusCalculator
+        -Func deductionCalculator
+        -Predicate employeeFilter
+        +OnSalaryProcessed
+        +RunPayroll() void
+        +ProcessPayrollAsync() Task
+        +ProcessPendingPaymentsAsync() Task
+        +GetLatestOperation() string
+    }
 
-Employee <|-- FullTimeEmployee
-IPayable <|.. FullTimeEmployee
+    class EmployeeJsonService {
+        +Export(string filePath, IEnumerable employees) void
+        +Import(string filePath) IReadOnlyList
+    }
 
-Employee --> EmployeeRole : has role
-Employee *-- ContactInfo : nested type
+    class AuditLogService {
+        -string filePath
+        +WriteEntry(string message) void
+    }
 
-FullTimeEmployee --> Money : processes
+    class HighEarnerReportService {
+        +Save(string filePath, IEnumerable employees, decimal threshold) void
+    }
 
-CompanyPayroll --> FullTimeEmployee : stores
-CompanyPayroll --> PayrollHandler : event
-CompanyPayroll --> Money : creates payment
+    class AuditTrailAttribute {
+        +string OperationName
+        +string Author
+    }
 
-Program --> CompanyPayroll : creates
-Program --> FullTimeEmployee : creates
-Program --> EmployeeRole : assigns
+    class DecimalExtensions {
+        <<static>>
+        +ToCurrencyString(decimal amount) string
+    }
+
+    class PayrollProcessingException {
+        +PayrollProcessingException(string message)
+        +PayrollProcessingException(string message, Exception innerException)
+    }
+
+    class Program {
+        <<application>>
+        +Main(string[] args) Task
+        -DisplayAuditMetadata() void
+        -CreateEmployeesFromInput() FullTimeEmployee[]
+        -TryRegisterEmployee(...) bool
+        -ReadValidSalary(string employeeName) decimal
+    }
+
+    Employee <|-- FullTimeEmployee
+    IPayable <|.. FullTimeEmployee
+
+    Employee --> EmployeeRole : has role
+    Employee *-- ContactInfo : owns
+    FullTimeEmployee --> Money : processes
+
+    Repository o-- Employee : stores
+    PaymentTransaction --> FullTimeEmployee : employee
+    PaymentTransaction --> Money : payment
+
+    CompanyPayroll --> Repository : reads employees
+    CompanyPayroll o-- PaymentTransaction : queues
+    CompanyPayroll --> AuditTrailAttribute : metadata
+
+    Program --> CompanyPayroll : coordinates
+    Program --> EmployeeJsonService : persists
+    Program --> AuditLogService : subscribes
+    Program --> HighEarnerReportService : creates reports
+    Program --> Repository : registers employees
+
+    EmployeeJsonService --> FullTimeEmployee : serializes
+    HighEarnerReportService --> FullTimeEmployee : reports
+    DecimalExtensions ..> Money : formats amounts
+    Money ..> PayrollProcessingException : throws
+```
