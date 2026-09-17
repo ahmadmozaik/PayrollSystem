@@ -10,6 +10,22 @@ class Program
 
         HashSet<string> employeeEmails = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
+        Comparer<Employee> employeeSalaryComparer =
+            Comparer<Employee>.Create((first, second) =>
+            {
+                int salaryComparison =
+                    first.BaseSalary.CompareTo(second.BaseSalary);
+
+                if (salaryComparison != 0)
+                {
+                    return salaryComparison;
+                }
+
+                return first.Id.CompareTo(second.Id);
+            });
+
+        SortedSet<Employee> employeesBySalary = new SortedSet<Employee>(employeeSalaryComparer);
+
         Func<Employee, decimal> bonusCalculator = employee =>  // Calculates a bonus based on employee role
         {
             if (employee.Role == EmployeeRole.Developer)
@@ -76,9 +92,18 @@ class Program
 
         repository.Add(employee1);
         employeesById.Add(employee1.Id, employee1);
+        employeesBySalary.Add(employee1);
+
         repository.Add(employee2);
         employeesById.Add(employee2.Id, employee2);
-        
+        employeesBySalary.Add(employee2);
+
+        Console.WriteLine("Employees sorted by base salary:");
+        foreach (Employee employee in employeesBySalary)
+        {
+            Console.WriteLine($" - {employee.Name}: {employee.BaseSalary} TRY");
+        }
+
         if (employeesById.TryGetValue(1, out Employee? foundEmployee))
         {
             Console.WriteLine($"Lookup found: {foundEmployee.Name}");
