@@ -104,6 +104,15 @@ class Program
             Console.WriteLine($" - {employee.Name}: {employee.BaseSalary} TRY");
         }
 
+        decimal highEarnerThreshold = 1500m;
+
+        Console.WriteLine($"Employees earning at least {highEarnerThreshold} TRY:");
+
+        foreach (FullTimeEmployee employee in repository.GetHighEarners(highEarnerThreshold))
+        {
+            Console.WriteLine($" - {employee.Name}: {employee.BaseSalary} TRY");
+        }
+
         if (employeesById.TryGetValue(1, out Employee? foundEmployee))
         {
             Console.WriteLine($"Lookup found: {foundEmployee.Name}");

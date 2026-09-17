@@ -39,5 +39,23 @@ namespace PayrollSystem
         {
             return items.AsReadOnly();
         }
+
+        /// <summary>
+        /// Lazily returns employees whose base salary is greater than or equal to the specified threshold.
+        /// </summary>
+        /// <param name="threshold">The minimum base salary for included employees.</param>
+        /// <returns>
+        /// Employees whose base salary is greater than or equal to the threshold.
+        /// </returns>
+        public IEnumerable<T> GetHighEarners(decimal threshold)
+        {
+            foreach (T employee in items)
+            {
+                if (employee.BaseSalary >= threshold)
+                {
+                    yield return employee;
+                }
+            }
+        }
     }
 }
