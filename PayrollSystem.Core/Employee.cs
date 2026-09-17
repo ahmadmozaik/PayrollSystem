@@ -39,10 +39,14 @@ namespace PayrollSystem
                 _baseSalary = value;
             }
         }
+        /// <summary>
+        /// Gets the employee's contact information, including email and phone number.
+        /// </summary>
+        public ContactInfo Contact { get; } = new ContactInfo();
         public class ContactInfo
         {
-            public string Email;
-            public string Phone;
+            public string Email { get; set; } = string.Empty;
+            public string Phone { get; set; } = string.Empty;
         }
 
         ~Employee()
