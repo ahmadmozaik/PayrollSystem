@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace PayrollSystem
+﻿namespace PayrollSystem
 {
     public enum EmployeeRole
     {

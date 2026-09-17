@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace PayrollSystem;
+﻿namespace PayrollSystem;
 
 /// <summary>
 /// Writes high-earning employee information to a text report.

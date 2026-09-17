@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace PayrollSystem
+﻿namespace PayrollSystem
 {
     /// <summary>
     /// Represents a monetary value with an amount and currency, providing functionality for arithmetic operations while ensuring currency consistency.

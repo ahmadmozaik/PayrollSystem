@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace PayrollSystem
+﻿namespace PayrollSystem
 {
     /// <summary>
     /// Stores and retrieves employee records, providing a simple in-memory repository for payroll processing.

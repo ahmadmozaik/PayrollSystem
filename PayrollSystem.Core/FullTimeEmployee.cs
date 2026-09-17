@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace PayrollSystem
+﻿namespace PayrollSystem
 {
     /// <summary>
     /// Represents a full-time employee in the payroll system, extending the Employee class and implementing the IPayable interface for payment processing.
