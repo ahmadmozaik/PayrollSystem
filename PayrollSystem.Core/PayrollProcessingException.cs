@@ -1,7 +1,7 @@
 ﻿namespace PayrollSystem
 {
     /// <summary>
-    /// Represents an error that occurs during payroll or money processing, such as when attempting to combine payments with different currencies.
+    /// Represents an error that occurs during payroll processing.
     /// </summary>
     public class PayrollProcessingException : Exception
     {
@@ -11,9 +11,25 @@
         /// <param name="message">
         /// The message that describes the payroll-processing error.
         /// </param>
-        public PayrollProcessingException(string message) : base(message)
+        public PayrollProcessingException(string message)
+            : base(message)
         {
+        }
 
+        /// <summary>
+        /// Initializes an instance with a message and the original exception.
+        /// </summary>
+        /// <param name="message">
+        /// The payroll-processing error message.
+        /// </param>
+        /// <param name="innerException">
+        /// The exception that caused this error.
+        /// </param>
+        public PayrollProcessingException(
+            string message,
+            Exception innerException)
+            : base(message, innerException)
+        {
         }
     }
 }

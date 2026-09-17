@@ -17,9 +17,13 @@ namespace PayrollSystem
         [AuditTrail("Process employee payment asynchronously", "PayrollSystem")]
         public async Task ProcessPaymentAsync(Money amount)
         {
-            Console.WriteLine($"Sending payment of {amount.Amount} {amount.Currency} to the payment gateway...");
+            Console.WriteLine(
+                $"Sending payment of {amount.Amount.ToCurrencyString()} " +
+                $"to the payment gateway...");
             await Task.Delay(1000); // Simulate async operation
-            Console.WriteLine($"Payment of {amount.Amount} {amount.Currency} completed for {Name}");
+            Console.WriteLine(
+                $"Payment of {amount.Amount.ToCurrencyString()} " +
+                $"completed for {Name}.");
         }
     }
 }

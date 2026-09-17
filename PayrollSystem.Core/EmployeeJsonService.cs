@@ -61,9 +61,18 @@ public sealed class EmployeeJsonService
 
         serializer.Converters.Add(new StringEnumConverter());
 
-        List<FullTimeEmployee>? employees =
-            serializer.Deserialize<List<FullTimeEmployee>>(jsonReader);
+        try
+        {
+            List<FullTimeEmployee>? employees =
+                serializer.Deserialize<List<FullTimeEmployee>>(jsonReader);
 
-        return employees ?? new List<FullTimeEmployee>();
+            return employees ?? new List<FullTimeEmployee>();
+        }
+        catch (JsonException exception)
+        {
+            throw new PayrollProcessingException(
+                "Employee JSON data is invalid.",
+                exception);
+        }
     }
 }

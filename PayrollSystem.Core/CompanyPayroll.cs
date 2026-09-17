@@ -74,7 +74,7 @@ namespace PayrollSystem
                 payment.Currency = "TRY";
 
                 pendingPayments.Enqueue(new PaymentTransaction(employee, payment));
-                operationHistory.Push($"Queued payment for {employee.Name}: {payment.Amount} {payment.Currency}");
+                operationHistory.Push($"Queued payment for {employee.Name}: {payment.Amount.ToCurrencyString()}");
             }
         }
 
@@ -100,9 +100,9 @@ namespace PayrollSystem
             {
                 PaymentTransaction transaction = pendingPayments.Dequeue();
                 await transaction.Employee.ProcessPaymentAsync(transaction.Payment);
-                operationHistory.Push($"Processed payment for {transaction.Employee.Name}: {transaction.Payment.Amount} {transaction.Payment.Currency}");
+                operationHistory.Push($"Processed payment for {transaction.Employee.Name}: {transaction.Payment.Amount.ToCurrencyString()}");
 
-                OnSalaryProcessed?.Invoke($"Salary processed for {transaction.Employee.Name}: {transaction.Payment.Amount} {transaction.Payment.Currency}");
+                OnSalaryProcessed?.Invoke($"Salary processed for {transaction.Employee.Name}: {transaction.Payment.Amount.ToCurrencyString()}");
             }
         }
 

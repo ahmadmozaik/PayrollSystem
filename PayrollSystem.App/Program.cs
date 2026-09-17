@@ -86,7 +86,17 @@ class Program
 
         if (File.Exists(employeeFilePath))
         {
-            employees = employeeJsonService.Import(employeeFilePath);
+            try
+            {
+                employees = employeeJsonService.Import(employeeFilePath);
+            }
+            catch (PayrollProcessingException exception)
+            {
+                Console.WriteLine(
+                    $"Employees could not be loaded: {exception.Message}");
+
+                return;
+            }
 
             Console.WriteLine(
                 $"Loaded {employees.Count} employees from JSON.");
